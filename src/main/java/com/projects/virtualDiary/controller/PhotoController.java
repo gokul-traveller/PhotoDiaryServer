@@ -2,6 +2,8 @@ package com.projects.virtualDiary.controller;
 
 import com.projects.virtualDiary.model.Photo;
 import com.projects.virtualDiary.model.User;
+import com.projects.virtualDiary.service.PhotoDiaryServiceStub;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +13,9 @@ import java.util.*;
 @RestController
 @RequestMapping("/api")
 public class PhotoController {
+
+    @Autowired
+    private PhotoDiaryServiceStub photoDiaryServiceStub;
 
     private static final List<User> users = new ArrayList<>();
     private static final List<Photo> photos = new ArrayList<>();
@@ -53,7 +58,8 @@ public class PhotoController {
     // 🔹 Fetch All Photos
     @GetMapping("/photos")
     public ResponseEntity<List<Photo>> getAllPhotos() {
-        return ResponseEntity.ok(photos);
+        System.out.println("photo method called");
+        return ResponseEntity.ok(photoDiaryServiceStub.getAllUsers());
     }
 
     // 🔹 Fetch Individual Photo Details

@@ -11,8 +11,8 @@ import java.util.List;
 public class Photo {
     @Getter
     private int id;
-    private String ownerId;
-    private String url;
+    private String userName;
+    private String imageData;
     private boolean isLocked;
     private List<String> accessList;
 
