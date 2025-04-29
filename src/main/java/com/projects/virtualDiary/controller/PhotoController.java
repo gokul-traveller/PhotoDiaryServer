@@ -52,7 +52,7 @@ public class PhotoController {
 
     // 🔹 Fetch Individual Photo Details
     @GetMapping("/photo/{category}")
-    public ResponseEntity<List<CategoryPhotos>> getPhotoDetails(@PathVariable Integer category) {
+    public ResponseEntity<CategoryPhotos> getPhotoDetails(@PathVariable Integer category) {
         System.out.println("photo method called");
         return photoDiaryServiceStub.getAllPhotos(category);
     }
@@ -82,4 +82,16 @@ public class PhotoController {
         return ResponseEntity.notFound().build();
     }
 
+    @PostMapping("/{photoId}/uploadInnerPhoto")
+    public ResponseEntity<String> uploadInnerPhoto(@PathVariable("photoId") int photoId,@RequestParam("image") MultipartFile file) {
+        System.out.println("innerphoto method called");
+        return photoDiaryServiceStub.uploadInnerPhoto(photoId,file);
+    }
+
+    // 🔹 Delete Photo
+    @DeleteMapping("/InnerPhoto/Cloudinary/{photoId}")
+    public ResponseEntity<String> deleteInnerPhoto(@PathVariable String photoId) {
+        System.out.println(photoId);
+        return photoDiaryServiceStub.deletePhoto(photoId);
+    }
 }

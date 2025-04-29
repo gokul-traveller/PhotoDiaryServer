@@ -29,12 +29,12 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
 
     List<User> users = new ArrayList<>();
     List<UserCategories> categories = new ArrayList<>();
-    List<CategoryPhotos> photos = new ArrayList<>();
-    Photos photo1 = new Photos("p1", img1, false);
-    Photos photo2 = new Photos("p2", img3, false);
-    Photos photo3 = new Photos("p3", img2, false);
+    CategoryPhotos photos;
+    Photos photo1 = new Photos(1,"publicId", img1, false);
+    Photos photo2 = new Photos(2,"publicId", img3, false);
+    Photos photo3 = new Photos(3,"publicId", img2, false);
 
-    int couter =2;
+    int couter =10;
     ClassPathResource imgFile = new ClassPathResource("images/abstractWallpaper.jpg");
 
 
@@ -55,8 +55,8 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
         users.add(new User(5, "user5", "user5@gmial.com", img1, false));
         users.add(new User(6, "user6", "user6@gmial.com", img2, false));
         users.add(new User(7, "user7", "user7@gmial.com", img1, true));
-        categories.add(new UserCategories("1","Travel",img3,false));
-        photos.add(new CategoryPhotos(1,"Gokul",new Photos[]{photo1,photo2,photo3}));
+        categories.add(new UserCategories(1,"PublicID","Travel",img3,false));
+        photos = new CategoryPhotos(1,"Gokul",new ArrayList<>(Arrays.asList(photo1, photo2, photo3)));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
             String img = uploadResult.get("secure_url").toString();
             String pId = uploadResult.get("public_id").toString();
             System.out.println("public_id"+pId);
-            categories.add(new UserCategories(pId,"Travel",img,false));
+            categories.add(new UserCategories(0,pId,"Travel",img,false));
             return ResponseEntity.ok(img);
         }
         catch (Exception e){
@@ -102,6 +102,7 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
         }
     }
 
+    @Override
     public ResponseEntity<String> deleteCollection(String photoId) {
         try {
             Map result = cloudinary.uploader().destroy("Cloudinary/"+photoId, ObjectUtils.emptyMap());
@@ -117,7 +118,7 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
     }
 
     @Override
-    public ResponseEntity<List<CategoryPhotos>> getAllPhotos(Integer userId) {
+    public ResponseEntity<CategoryPhotos> getAllPhotos(Integer userId) {
         try {
             System.out.println(photos);
             return ResponseEntity.ok(photos);
@@ -127,5 +128,38 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @Override
+    public ResponseEntity<String> uploadInnerPhoto(int photoId,MultipartFile file) {
+        try {
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap("folder", "Cloudinary")); // optional folder
+            int Id = couter++;
+            String img = uploadResult.get("secure_url").toString();
+            String publicId = uploadResult.get("public_id").toString();
+            System.out.println("public_id"+publicId);
+            photos.getPhotos().add(new Photos(Id,publicId,img,false));
+            return ResponseEntity.ok(img);
+        }
+        catch (Exception e){
+            e.printStackTrace(); // This will show the complete error details
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deletePhoto(String photoId) {
+        try {
+            Map result = cloudinary.uploader().destroy("Cloudinary/"+photoId, ObjectUtils.emptyMap());
+            System.out.println("photo id from react " + photoId);
+            System.out.println(result);
+            photos.getPhotos().removeIf(photo -> photo.getPublicId().equals("Cloudinary/"+photoId));
+            return ResponseEntity.ok(result.get("result").toString());
+        }
+        catch (Exception e){
+            e.printStackTrace(); // This will show the complete error details
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Delete failed");
+        }
     }
 }

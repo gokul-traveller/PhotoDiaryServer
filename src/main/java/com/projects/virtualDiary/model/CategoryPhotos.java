@@ -3,6 +3,7 @@ package com.projects.virtualDiary.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -10,5 +11,6 @@ import java.util.Map;
 public class CategoryPhotos {
     private int photoId;
     private String userName;
-    private Photos[] photos;
+    private List<Photos> photos;
+
 }

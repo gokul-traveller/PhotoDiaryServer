@@ -10,7 +10,9 @@ import java.util.List;
 @AllArgsConstructor
 public class UserCategories {
 
-    private String id;
+    private int id;
+
+    private String publicId;
 
     private String name;
 
@@ -19,6 +21,6 @@ public class UserCategories {
     private boolean isLocked;
 
     public String getPhotoId() {
-        return id;
+        return publicId;
     }
 }

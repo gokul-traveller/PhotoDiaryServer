@@ -15,5 +15,8 @@ interface PhotoDiaryService {
     ResponseEntity<String> uploadPhoto(MultipartFile file);
     ResponseEntity<String> deleteCollection(String photoId);
 //    ResponseEntity<String> deletePhots(String photoId);
-    ResponseEntity<List<CategoryPhotos>> getAllPhotos(Integer userId);
+    ResponseEntity<CategoryPhotos> getAllPhotos(Integer userId);
+
+    ResponseEntity<String> uploadInnerPhoto(int photoId,MultipartFile file);
+    ResponseEntity<String> deletePhoto(String photoId);
 }

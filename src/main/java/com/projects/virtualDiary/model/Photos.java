@@ -7,7 +7,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Photos {
-    private String photoId;
+    private Integer photoId;
+    private String publicId;
     private String imageData;
     private boolean locked;
 }
