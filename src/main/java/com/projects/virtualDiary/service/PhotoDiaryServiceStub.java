@@ -2,10 +2,10 @@ package com.projects.virtualDiary.service;
 
 import com.cloudinary.utils.ObjectUtils;
 import com.projects.virtualDiary.model.CategoryPhotos;
-import com.projects.virtualDiary.model.Photos;
 import com.projects.virtualDiary.model.User;
 import com.projects.virtualDiary.model.UserCategories;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.cloudinary.Cloudinary;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Service
+@Profile({"dev"})
 public class PhotoDiaryServiceStub implements PhotoDiaryService{
 
     private final Cloudinary cloudinary;
@@ -30,9 +28,9 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
     List<User> users = new ArrayList<>();
     List<UserCategories> categories = new ArrayList<>();
     CategoryPhotos photos;
-    Photos photo1 = new Photos(1,"publicId", img1, false);
-    Photos photo2 = new Photos(2,"publicId", img3, false);
-    Photos photo3 = new Photos(3,"publicId", img2, false);
+//    Photos photo1 = new Photos(1,"publicId", img1, false);
+//    Photos photo2 = new Photos(2,"publicId", img3, false);
+//    Photos photo3 = new Photos(3,"publicId", img2, false);
 
     int couter =10;
     ClassPathResource imgFile = new ClassPathResource("images/abstractWallpaper.jpg");
@@ -48,15 +46,7 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
                 "api_key", apiKey,
                 "api_secret", apiSecret
         ));
-        users.add(new User(1, "user1", "user1@gmial.com", img1, true));
-        users.add(new User(2, "user2", "user2@gmial.com", img2, false));
-        users.add(new User(3, "user3", "user3@gmial.com", img3, true));
-        users.add(new User(4, "user4", "user4@gmial.com", img3, false));
-        users.add(new User(5, "user5", "user5@gmial.com", img1, false));
-        users.add(new User(6, "user6", "user6@gmial.com", img2, false));
-        users.add(new User(7, "user7", "user7@gmial.com", img1, true));
-        categories.add(new UserCategories(1,"PublicID","Travel",img3,false));
-        photos = new CategoryPhotos(1,"Gokul",new ArrayList<>(Arrays.asList(photo1, photo2, photo3)));
+
     }
 
     @Override
@@ -93,7 +83,7 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
             String img = uploadResult.get("secure_url").toString();
             String pId = uploadResult.get("public_id").toString();
             System.out.println("public_id"+pId);
-            categories.add(new UserCategories(0,pId,"Travel",img,false));
+//            categories.add(new UserCategories(0,new User(1, "user1", "user1@gmial.com", img1, true,categories),pId,"Travel",img,false));
             return ResponseEntity.ok(img);
         }
         catch (Exception e){
@@ -108,7 +98,7 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
             Map result = cloudinary.uploader().destroy("Cloudinary/"+photoId, ObjectUtils.emptyMap());
             System.out.println("photo id from react " + photoId);
             System.out.println(result);
-            categories.removeIf(category -> category.getPhotoId().equals("Cloudinary/"+photoId));
+            categories.removeIf(category -> category.getPublicId().equals("Cloudinary/"+photoId));
             return ResponseEntity.ok(result.get("result").toString());
         }
         catch (Exception e){
@@ -118,10 +108,10 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
     }
 
     @Override
-    public ResponseEntity<CategoryPhotos> getAllPhotos(Integer userId) {
+    public ResponseEntity<List<CategoryPhotos>> getAllPhotos(int userId) {
         try {
             System.out.println(photos);
-            return ResponseEntity.ok(photos);
+            return ResponseEntity.ok(new ArrayList<>(Arrays.asList(photos)));
         }
         catch (Exception e){
             System.out.println(e.getMessage());
@@ -139,7 +129,7 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
             String img = uploadResult.get("secure_url").toString();
             String publicId = uploadResult.get("public_id").toString();
             System.out.println("public_id"+publicId);
-            photos.getPhotos().add(new Photos(Id,publicId,img,false));
+//            photos.getPhotos().add(new Photos(Id,publicId,img,false));
             return ResponseEntity.ok(img);
         }
         catch (Exception e){
@@ -154,12 +144,17 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
             Map result = cloudinary.uploader().destroy("Cloudinary/"+photoId, ObjectUtils.emptyMap());
             System.out.println("photo id from react " + photoId);
             System.out.println(result);
-            photos.getPhotos().removeIf(photo -> photo.getPublicId().equals("Cloudinary/"+photoId));
+//            photos.getPhotos().removeIf(photo -> photo.getPublicId().equals("Cloudinary/"+photoId));
             return ResponseEntity.ok(result.get("result").toString());
         }
         catch (Exception e){
             e.printStackTrace(); // This will show the complete error details
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Delete failed");
         }
+    }
+
+    @Override
+    public void addInitialValues(List<User> users, List<UserCategories> categories, List<CategoryPhotos> photos) {
+        //do nothing
     }
 }
