@@ -1,8 +1,9 @@
 package com.projects.virtualDiary.model;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class User {
     @Id
@@ -26,5 +26,15 @@ public class User {
     private boolean isLocked;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @JsonIgnore
     private List<UserCategories> userCategories;
+
+    public User( String userName, String email, String imageData, boolean isLocked, List<UserCategories> userCategories) {
+        this.userName = userName;
+        this.email = email;
+        this.imageData = imageData;
+        this.isLocked = isLocked;
+        this.userCategories = userCategories;
+    }
 }

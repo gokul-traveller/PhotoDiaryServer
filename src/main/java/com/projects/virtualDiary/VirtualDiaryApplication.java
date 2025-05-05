@@ -12,9 +12,6 @@ public class VirtualDiaryApplication {
 
 	public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(VirtualDiaryApplication.class, args);
-		PhotoDiaryService photoDiaryService = context.getBean(PhotoDiaryService.class);
-		DBinitialData dBinitialData = context.getBean(DBinitialData.class);
-		photoDiaryService.addInitialValues(dBinitialData.getUsers(),dBinitialData.getCategories(),dBinitialData.getPhotos());
 	}
 
 }

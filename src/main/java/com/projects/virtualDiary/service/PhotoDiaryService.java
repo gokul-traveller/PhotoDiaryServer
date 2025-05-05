@@ -7,15 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 public interface PhotoDiaryService {
     List<User> getAllUsers();
     ResponseEntity<List<UserCategories>> getUserCategories(String userId);
-    ResponseEntity<String> uploadPhoto(MultipartFile file);
+    ResponseEntity<String> uploadPhoto(MultipartFile file, String userId);
     ResponseEntity<String> deleteCollection(String photoId);
     ResponseEntity<List<CategoryPhotos>> getAllPhotos(int userId);
     ResponseEntity<String> uploadInnerPhoto(int photoId,MultipartFile file);
     ResponseEntity<String> deletePhoto(String photoId);
-    void addInitialValues(List<User> users,List<UserCategories> categories,List<CategoryPhotos> photos);
+    ResponseEntity<String> updateCategoryText(Integer categoryId, String title);
 }

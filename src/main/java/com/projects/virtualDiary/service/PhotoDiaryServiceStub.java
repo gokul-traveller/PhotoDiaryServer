@@ -76,7 +76,7 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
     }
 
     @Override
-    public ResponseEntity<String> uploadPhoto(MultipartFile file) {
+    public ResponseEntity<String> uploadPhoto(MultipartFile file, String userId) {
         try {
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                     ObjectUtils.asMap("folder", "Cloudinary")); // optional folder
@@ -154,7 +154,8 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
     }
 
     @Override
-    public void addInitialValues(List<User> users, List<UserCategories> categories, List<CategoryPhotos> photos) {
-        //do nothing
+    public ResponseEntity<String> updateCategoryText(Integer categoryId, String title) {
+        return null;
     }
+
 }

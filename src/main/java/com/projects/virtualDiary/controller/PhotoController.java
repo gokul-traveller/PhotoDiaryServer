@@ -60,8 +60,8 @@ public class PhotoController {
 
     // 🔹 Upload Photo (Simulated)
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadPhoto(@RequestParam("image") MultipartFile file) {
-        return photoDiaryService.uploadPhoto(file);
+    public ResponseEntity<String> uploadPhoto(@RequestParam("image") MultipartFile file, @RequestParam("userId") String userId) {
+        return photoDiaryService.uploadPhoto(file, userId);
     }
 
     // 🔹 Delete Photo
@@ -94,5 +94,12 @@ public class PhotoController {
     public ResponseEntity<String> deleteInnerPhoto(@PathVariable String photoId) {
         System.out.println(photoId);
         return photoDiaryService.deletePhoto(photoId);
+    }
+
+    // 🔹 Fetch Individual Photo Details
+    @PutMapping("/photo/{categoryId}/{title}")
+    public ResponseEntity<String> updateCategoryText(@PathVariable Integer categoryId,@PathVariable String title) {
+        System.out.println("updateCategoryText method called");
+        return photoDiaryService.updateCategoryText(categoryId,title);
     }
 }

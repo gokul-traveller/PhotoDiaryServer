@@ -1,45 +1,59 @@
 package com.projects.virtualDiary.Data;
 
+import com.projects.virtualDiary.Repo.UserCategoryRepository;
+import com.projects.virtualDiary.Repo.UserPhotoRepository;
+import com.projects.virtualDiary.Repo.UserRepository;
 import com.projects.virtualDiary.model.CategoryPhotos;
 import com.projects.virtualDiary.model.User;
 import com.projects.virtualDiary.model.UserCategories;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 @Component
+@RequiredArgsConstructor
 public class DBinitialData {
-    DBinitialData(){
-        initialize();
+
+    private final UserRepository userRepository;
+    private final UserCategoryRepository categoryRepository;
+    private final UserPhotoRepository photoRepository;
+
+    @PostConstruct
+    public void initialize() {
+        if (userRepository.count() > 0) {
+            System.out.println("Initial data already exists. Skipping seeding.");
+            return;
+        }
+
+        seedData();
     }
 
-    List<User> users = new ArrayList<>();
-    List<UserCategories> categories= new ArrayList<>();
-    List<CategoryPhotos> photos= new ArrayList<>();
-
-    private void initialize() {
+    private void seedData() {
         String img1 = "https://res.cloudinary.com/dcwjkhu6o/image/upload/v1744284939/Cloudinary/a5nkdy9xj71rrqix7qxt.jpg";
         String img2 = "https://res.cloudinary.com/dcwjkhu6o/image/upload/v1744284419/Cloudinary/wpmke9rpoxjaiqxqnzuv.png";
         String img3 = "https://res.cloudinary.com/dcwjkhu6o/image/upload/v1744285018/Cloudinary/wcos1bztuuizzfngsqrv.jpg";
 
-        User user = new User(1, "user1", "user1@gmial.com", img1, false,null);
+        List<User> users = new ArrayList<>();
+        User user = new User( "Robot", "user1@gmial.com", img1, false,null);
         users.add(user);
-        users.add(new User(2, "user2", "user2@gmial.com", img2, false,null));
-        users.add(new User(3, "user3", "user3@gmial.com", img3, true,null));
-        users.add(new User(4, "user4", "user4@gmial.com", img3, false,null));
-        users.add(new User(5, "user5", "user5@gmial.com", img1, false,null));
-        users.add(new User(6, "user6", "user6@gmial.com", img2, false,null));
-        users.add(new User(7, "user7", "user7@gmial.com", img1, true,null));
+        users.add(new User( "Abhi", "user2@gmial.com", img2, false,null));
+        users.add(new User( "Gokul", "user3@gmial.com", img3, true,null));
+        users.add(new User( "Hari", "user4@gmial.com", img3, false,null));
+        users.add(new User( "Aswin", "user5@gmial.com", img1, false,null));
+        users.add(new User( "Leo", "user6@gmial.com", img2, false,null));
+        users.add(new User( "Sam", "user7@gmial.com", img1, true,null));
+        userRepository.saveAll(users);
 
-        UserCategories category1 = new UserCategories(1,"PublicID","Travel",img3,false,user,null);
-        categories.add(category1);
+        UserCategories category1 = new UserCategories("PublicID","Travel",img3,false,user,null);
+        categoryRepository.save(category1);
 
-        photos.add(new CategoryPhotos(1,"publicId", img1, false,category1));
-        photos.add(new CategoryPhotos(1,"publicId", img3, false,category1));
-        photos.add(new CategoryPhotos(1,"publicId", img2, false,category1));
+        photoRepository.save(new CategoryPhotos("publicId", img1, false,category1));
+        photoRepository.save(new CategoryPhotos("publicId", img3, false,category1));
+        photoRepository.save(new CategoryPhotos("publicId", img2, false,category1));
     }
 
 }
