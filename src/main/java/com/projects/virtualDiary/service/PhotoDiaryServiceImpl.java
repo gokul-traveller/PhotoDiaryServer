@@ -80,8 +80,14 @@ public class PhotoDiaryServiceImpl implements PhotoDiaryService {
             Map result = cloudinary.uploader().destroy("Cloudinary/"+photoId, ObjectUtils.emptyMap());
             System.out.println("photo id from react " + photoId);
             System.out.println(result);
-            Optional<UserCategories> category = categoryRepository.findByPublicId("Cloudinary/" + photoId);
-            category.ifPresent(categoryRepository::delete);
+            UserCategories category = categoryRepository.findByPublicId("Cloudinary/" + photoId)
+                    .orElseThrow(() -> new RuntimeException("Category not found"));;
+            List<CategoryPhotos> photos = category.getUserCategoryPhotos();
+            for (CategoryPhotos photo : photos) {
+                String publicId = photo.getPublicId(); // Make sure getter exists
+                cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            }
+            categoryRepository.delete(category);
             return ResponseEntity.ok(result.get("result").toString());
         }
         catch (Exception e){
