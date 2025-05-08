@@ -59,13 +59,15 @@ public class PhotoDiaryServiceImpl implements PhotoDiaryService {
     @Override
     public ResponseEntity<String> uploadPhoto(MultipartFile file, String userId) {
         try {
+            System.out.println("user ID : " + userId);
             Optional<User> user = userRepository.findById(Integer.parseInt(userId));
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                     ObjectUtils.asMap("folder", "Cloudinary")); // optional folder
+            System.out.println("saved in cloudinary");
             String img = uploadResult.get("secure_url").toString();
             String pId = uploadResult.get("public_id").toString();
             System.out.println("public_id"+pId);
-            categoryRepository.save(new UserCategories(pId,"Travel",img,false,user.orElse(null),null));
+            categoryRepository.save(new UserCategories(pId,"Category",img,false,user.orElse(null),null));
             return ResponseEntity.ok(img);
         }
         catch (Exception e){
@@ -148,6 +150,28 @@ public class PhotoDiaryServiceImpl implements PhotoDiaryService {
             e.printStackTrace(); // This will show the complete error details
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update failed");
         }
+    }
+
+    @Override
+    public ResponseEntity<String> updateCategoryLcok(Integer categoryId, boolean lock) {
+        try {
+            Optional<UserCategories> category = categoryRepository.findById(categoryId);
+            category.ifPresent(category1 -> category1.setLocked(lock));
+            assert category.orElse(null) != null;
+            categoryRepository.save(category.orElse(null));
+            return ResponseEntity.ok("Updated");
+        }
+        catch (Exception e){
+            e.printStackTrace(); // This will show the complete error details
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update failed");
+        }
+    }
+
+    @Override
+    public ResponseEntity<User> getUserById(int userId) {
+        return userRepository.findById(userId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }

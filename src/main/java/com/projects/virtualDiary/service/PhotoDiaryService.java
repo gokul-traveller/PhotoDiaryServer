@@ -17,4 +17,6 @@ public interface PhotoDiaryService {
     ResponseEntity<String> uploadInnerPhoto(int photoId,MultipartFile file);
     ResponseEntity<String> deletePhoto(String photoId);
     ResponseEntity<String> updateCategoryText(Integer categoryId, String title);
+    ResponseEntity<String> updateCategoryLcok(Integer categoryId, boolean lock);
+    ResponseEntity<User> getUserById(int userId);
 }

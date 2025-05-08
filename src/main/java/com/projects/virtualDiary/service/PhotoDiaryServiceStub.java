@@ -158,4 +158,14 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
         return null;
     }
 
+    @Override
+    public ResponseEntity<String> updateCategoryLcok(Integer categoryId, boolean lock) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<User> getUserById(int userId) {
+        return null;
+    }
+
 }

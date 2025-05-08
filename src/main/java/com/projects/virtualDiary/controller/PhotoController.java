@@ -102,4 +102,17 @@ public class PhotoController {
         System.out.println("updateCategoryText method called");
         return photoDiaryService.updateCategoryText(categoryId,title);
     }
+
+    // 🔹 Fetch Individual Photo Details
+    @PutMapping("/photo/lock/{categoryId}/{lock}")
+    public ResponseEntity<String> updateCategoryLcok(@PathVariable Integer categoryId,@PathVariable Boolean lock) {
+        System.out.println("updateCategoryLock method called");
+        return photoDiaryService.updateCategoryLcok(categoryId,lock);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable Integer userId) {
+        System.out.println("GetUser method called");
+        return photoDiaryService.getUserById(userId);
+    }
 }
