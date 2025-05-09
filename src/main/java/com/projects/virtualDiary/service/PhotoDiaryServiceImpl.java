@@ -16,9 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Profile({"default"})
@@ -172,6 +170,19 @@ public class PhotoDiaryServiceImpl implements PhotoDiaryService {
         return userRepository.findById(userId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @Override
+    public ResponseEntity<Map<String, String>> getCategoryrById(int categoryId) {
+        UserCategories category = categoryRepository.findById(categoryId).orElse(null);
+        assert category != null;
+        User user = category.getUser();
+        String userName = user.getUserName();
+        String categoryName = category.getName();
+        Map<String, String> result = new HashMap<>();
+        result.put("userName", userName);
+        result.put("categoryName", categoryName);
+        return ResponseEntity.ok(result);
     }
 
 }

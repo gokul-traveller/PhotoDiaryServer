@@ -23,7 +23,7 @@ public class PhotoController {
 
 
     // 🔹 User Authentication (Simulated)
-    @PostMapping("/auth/login")
+    @GetMapping("/auth/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credentials) {
         String email = credentials.get("email");
         Optional<User> user = users.stream().filter(u -> u.getEmail().equals(email)).findFirst();
@@ -35,6 +35,12 @@ public class PhotoController {
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(401).body(Collections.singletonMap("error", "Invalid credentials"));
+    }
+
+    // 🔹 User Login (Guest)
+    @GetMapping("/auth/guestLogin")
+    public ResponseEntity<User> guestLogin() {
+        return ResponseEntity.ok(new User(0,"Guest", "Guest@gmial.com", "photo", false,new ArrayList<>()));
     }
 
     // 🔹 Fetch User Profile
@@ -114,5 +120,11 @@ public class PhotoController {
     public ResponseEntity<User> getUserById(@PathVariable Integer userId) {
         System.out.println("GetUser method called");
         return photoDiaryService.getUserById(userId);
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<Map<String, String>> getCategoryrById(@PathVariable Integer categoryId) {
+        System.out.println("Getcategory method called");
+        return photoDiaryService.getCategoryrById(categoryId);
     }
 }

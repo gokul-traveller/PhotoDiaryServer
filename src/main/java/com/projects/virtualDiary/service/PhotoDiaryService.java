@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PhotoDiaryService {
     List<User> getAllUsers();
@@ -19,4 +20,5 @@ public interface PhotoDiaryService {
     ResponseEntity<String> updateCategoryText(Integer categoryId, String title);
     ResponseEntity<String> updateCategoryLcok(Integer categoryId, boolean lock);
     ResponseEntity<User> getUserById(int userId);
+    ResponseEntity<Map<String, String>> getCategoryrById(int categoryId);
 }

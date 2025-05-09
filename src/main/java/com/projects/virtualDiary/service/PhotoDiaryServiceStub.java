@@ -168,4 +168,9 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
         return null;
     }
 
+    @Override
+    public ResponseEntity<Map<String, String>> getCategoryrById(int categoryId) {
+        return null;
+    }
+
 }
