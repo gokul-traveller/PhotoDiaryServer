@@ -5,6 +5,7 @@ import com.projects.virtualDiary.model.User;
 import com.projects.virtualDiary.model.UserCategories;
 import com.projects.virtualDiary.service.PhotoDiaryService;
 import com.projects.virtualDiary.service.PhotoDiaryServiceStub;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,22 +20,13 @@ public class PhotoController {
     @Autowired
     private PhotoDiaryService photoDiaryService;
 
-    private static final List<User> users = new ArrayList<>();
+    @Setter
+    private User user;
 
-
-    // 🔹 User Authentication (Simulated)
-    @GetMapping("/auth/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credentials) {
-        String email = credentials.get("email");
-        Optional<User> user = users.stream().filter(u -> u.getEmail().equals(email)).findFirst();
-
-        if (user.isPresent()) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Login successful");
-            response.put("userId", String.valueOf(user.get().getUserId()));
-            return ResponseEntity.ok(response);
-        }
-        return ResponseEntity.status(401).body(Collections.singletonMap("error", "Invalid credentials"));
+    @GetMapping("/user/me")
+    public ResponseEntity<User> getUserDetails() {
+        System.out.println("returning new user of data : "+ user);
+        return ResponseEntity.ok(user); // Send only safe fields
     }
 
     // 🔹 User Login (Guest)
@@ -50,11 +42,11 @@ public class PhotoController {
         return photoDiaryService.getUserCategories(userId);
     }
 
-    // 🔹 Fetch All Photos
     @GetMapping("/photos")
-    public ResponseEntity<List<User>> getAllPhotos() {
-        System.out.println("photo method called");
-        return ResponseEntity.ok(photoDiaryService.getAllUsers());
+    public ResponseEntity<List<User>> getAllPhotos(@RequestParam(required = false) Long userId) {
+        System.out.println("photo method called with userId: " + userId);
+        List<User> sortedUsers = photoDiaryService.getAllUsers(userId);
+        return ResponseEntity.ok(sortedUsers);
     }
 
     // 🔹 Fetch Individual Photo Details
@@ -75,18 +67,6 @@ public class PhotoController {
     public ResponseEntity<String> deletePhoto(@PathVariable String photoId) {
         System.out.println(photoId);
         return photoDiaryService.deleteCollection(photoId);
-    }
-
-    // 🔹 Toggle Lock/Unlock Photo
-    @PostMapping("/photo/{photoId}/toggle-lock")
-    public ResponseEntity<Map<String, String>> toggleLockPhoto(@PathVariable int photoId) {
-        for (User user : users) {
-            if (user.getUserId() == photoId) {
-                user.setLocked(!user.isLocked());
-                return ResponseEntity.ok(Collections.singletonMap("message", "Photo lock status updated"));
-            }
-        }
-        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/{photoId}/uploadInnerPhoto")

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface PhotoDiaryService {
-    List<User> getAllUsers();
+    List<User> getAllUsers(Long userId);
     ResponseEntity<List<UserCategories>> getUserCategories(String userId);
     ResponseEntity<String> uploadPhoto(MultipartFile file, String userId);
     ResponseEntity<String> deleteCollection(String photoId);
@@ -21,4 +21,6 @@ public interface PhotoDiaryService {
     ResponseEntity<String> updateCategoryLcok(Integer categoryId, boolean lock);
     ResponseEntity<User> getUserById(int userId);
     ResponseEntity<Map<String, String>> getCategoryrById(int categoryId);
+    User getUserByEmail(String userEmail);
+    void saveUser(User user);
 }

@@ -21,7 +21,7 @@ public class User {
 
     private String userName;
 
-    private String email;
+    private String userEmail;
 
     private String imageData;
 
@@ -32,9 +32,9 @@ public class User {
     @JsonIgnore
     private List<UserCategories> userCategories;
 
-    public User( String userName, String email, String imageData, boolean isLocked, List<UserCategories> userCategories) {
+    public User( String userName, String userEmail, String imageData, boolean isLocked, List<UserCategories> userCategories) {
         this.userName = userName;
-        this.email = email;
+        this.userEmail = userEmail;
         this.imageData = imageData;
         this.isLocked = isLocked;
         this.userCategories = userCategories;

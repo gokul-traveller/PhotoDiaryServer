@@ -45,8 +45,26 @@ public class PhotoDiaryServiceImpl implements PhotoDiaryService {
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<User> getAllUsers(Long userId) {
+        List<User> allUsers = userRepository.findAll();
+        System.out.println("user ID : " + userId);
+        if (userId != null) {
+            allUsers.sort(Comparator.comparing(user -> user.getUserId() != userId));
+        }
+        System.out.println("sorted Users : "+ allUsers);
+        return allUsers;
+
+    }
+
+    @Override
+    public User getUserByEmail(String userEmail) {
+        return userRepository.findByUserEmail(userEmail)
+                .orElse(null);
+    }
+
+    @Override
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
     @Override
