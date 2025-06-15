@@ -50,7 +50,7 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(Long userId) {
 
         // Convert image bytes to Base64
         try {
@@ -164,12 +164,37 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
     }
 
     @Override
+    public ResponseEntity<String> updatePhotoLcok(Integer photoId, boolean lock) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<String> updateUserLock(Integer userId, boolean lock) {
+        return null;
+    }
+
+    @Override
     public ResponseEntity<User> getUserById(int userId) {
         return null;
     }
 
     @Override
     public ResponseEntity<Map<String, String>> getCategoryrById(int categoryId) {
+        return null;
+    }
+
+    @Override
+    public User getUserByEmail(String userEmail) {
+        return null;
+    }
+
+    @Override
+    public void saveUser(User user) {
+
+    }
+
+    @Override
+    public ResponseEntity<Integer> getCategoryrUser(int categoryId) {
         return null;
     }
 

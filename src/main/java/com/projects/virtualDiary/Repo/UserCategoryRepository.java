@@ -15,5 +15,7 @@ public interface UserCategoryRepository extends JpaRepository<UserCategories, In
     @Query("SELECT u FROM UserCategories u WHERE u.user.userId = :userId ORDER BY u.categoryId ASC")
     List<UserCategories> findByUserIdOrdered(int userId);
 
+    UserCategories findByCategoryId(int categoryId);
+
     Optional<UserCategories> findByPublicId(String publicId);
 }

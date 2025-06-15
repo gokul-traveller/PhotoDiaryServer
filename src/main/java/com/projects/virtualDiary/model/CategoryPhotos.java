@@ -1,13 +1,11 @@
 package com.projects.virtualDiary.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
@@ -24,16 +22,16 @@ public class CategoryPhotos {
 
     private boolean locked;
 
-
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference  // Prevents infinite recursion during JSON serialization
+    @ToString.Exclude   // Avoid stack overflow in Lombok toString
     private UserCategories userCategory;
 
-    public CategoryPhotos(String publicId, String img3, boolean locked, UserCategories category1) {
+    public CategoryPhotos(String publicId, String imageData, boolean locked, UserCategories userCategory) {
         this.publicId = publicId;
-        this.imageData = img3;
+        this.imageData = imageData;
         this.locked = locked;
-        this.userCategory = category1;
+        this.userCategory = userCategory;
     }
 }
