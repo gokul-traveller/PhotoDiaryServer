@@ -6,14 +6,13 @@ import com.projects.virtualDiary.model.UserCategories;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 import java.util.Map;
 
 public interface PhotoDiaryService {
-    List<User> getAllUsers(Long userId);
+    List<User> getAllUsers(int userId);
     ResponseEntity<List<UserCategories>> getUserCategories(String userId);
-    ResponseEntity<String> uploadPhoto(MultipartFile file, String userId);
+    ResponseEntity<String> uploadPhoto(MultipartFile file, int userId);
     ResponseEntity<String> deleteCollection(String photoId);
     ResponseEntity<List<CategoryPhotos>> getAllPhotos(int userId);
     ResponseEntity<String> uploadInnerPhoto(int photoId,MultipartFile file);
@@ -26,5 +25,5 @@ public interface PhotoDiaryService {
     ResponseEntity<Map<String, String>> getCategoryrById(int categoryId);
     User getUserByEmail(String userEmail);
     void saveUser(User user);
-    ResponseEntity<Integer> getCategoryrUser(int categoryId);
+    ResponseEntity<Boolean> getCategoryrUser(int categoryId);
 }

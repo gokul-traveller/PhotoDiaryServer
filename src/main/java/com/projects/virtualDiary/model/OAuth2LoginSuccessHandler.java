@@ -1,6 +1,6 @@
 package com.projects.virtualDiary.model;
 
-import com.projects.virtualDiary.Repo.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projects.virtualDiary.controller.PhotoController;
 import com.projects.virtualDiary.service.JwtService;
 import com.projects.virtualDiary.service.PhotoDiaryServiceImpl;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Base64;
 
@@ -39,12 +40,16 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             user = new User(oAuth2User.getName(),email,oAuth2User.getAttribute("picture"),false,new ArrayList<>());
             service.saveUser(user);
         };
-        controller.setUser(user);
         // Optional: Generate a token or store user information in a session
         String token = jwtService.generateToken(email); // Generate a token here (e.g., JWT)
 
+        // Serialize the user data to JSON string
+        String userJson = URLEncoder.encode(new ObjectMapper().writeValueAsString(user), "UTF-8");
+        String tokenEncoded = URLEncoder.encode(token, "UTF-8");
+
         // Redirect to the frontend with the token
-        response.sendRedirect("http://localhost:5173/login/success?token=" + token);
+        String redirectUrl ="http://localhost:5173/login/success?token=" + token + "&user=" + userJson;
+        response.sendRedirect(redirectUrl);
     }
 
     private String generateToken(String email) {

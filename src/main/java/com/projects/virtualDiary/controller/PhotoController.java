@@ -3,128 +3,161 @@ package com.projects.virtualDiary.controller;
 import com.projects.virtualDiary.model.CategoryPhotos;
 import com.projects.virtualDiary.model.User;
 import com.projects.virtualDiary.model.UserCategories;
+import com.projects.virtualDiary.service.CustomUserDetails;
+import com.projects.virtualDiary.service.JwtService;
 import com.projects.virtualDiary.service.PhotoDiaryService;
-import com.projects.virtualDiary.service.PhotoDiaryServiceStub;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class PhotoController {
 
+    private final PhotoDiaryService photoDiaryService;
     @Autowired
-    private PhotoDiaryService photoDiaryService;
+    JwtService jwtService;
 
-    @Setter
-    private User user;
-
-    @GetMapping("/user/me")
-    public ResponseEntity<User> getUserDetails() {
-        System.out.println("returning new user of data : "+ user);
-        return ResponseEntity.ok(user); // Send only safe fields
-    }
-
-    // 🔹 User Login (Guest)
     @GetMapping("/auth/guestLogin")
-    public ResponseEntity<User> guestLogin() {
-        return ResponseEntity.ok(new User(0,"Guest", "Guest@gmial.com", "photo", false,new ArrayList<>()));
+    public ResponseEntity<?> guestLogin() {
+        User guestUser = new User(0, "Guest", "guest@gmail.com", "photo", false, new ArrayList<>());
+
+        // 🔐 Generate JWT token (adjust method as per your JWT implementation)
+        String token = jwtService.generateToken(guestUser.getUserEmail()); // Replace with your actual method
+
+        // 📦 Return both user and token
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", guestUser);
+        response.put("token", token);
+
+        return ResponseEntity.ok(response);
     }
+
 
     // 🔹 Fetch User Profile
     @GetMapping("/profile/{userId}")
     public ResponseEntity<List<UserCategories>> getUserCategories(@PathVariable String userId) {
-
         return photoDiaryService.getUserCategories(userId);
     }
 
+    // 🔹 Get all users (filtered if userId provided)
     @GetMapping("/photos")
-    public ResponseEntity<List<User>> getAllPhotos(@RequestParam(required = false) Long userId) {
-        System.out.println("photo method called with userId: " + userId);
-        List<User> sortedUsers = photoDiaryService.getAllUsers(userId);
-        return ResponseEntity.ok(sortedUsers);
+    public ResponseEntity<List<User>> getAllPhotos(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        System.out.println("inside getallphotos");
+        System.out.println(userDetails);
+        if (userDetails == null) {
+            throw new RuntimeException("CustomUserDetails is null!");
+        }
+        System.out.println("before calling service of  getallphotos");
+        int userId = userDetails.getUserId();
+        return ResponseEntity.ok(photoDiaryService.getAllUsers(userId));
     }
 
-    // 🔹 Fetch Individual Photo Details
+    // 🔹 Fetch photos under a category
+    // need upgrade
     @GetMapping("/photo/{category}")
     public ResponseEntity<List<CategoryPhotos>> getPhotoDetails(@PathVariable Integer category) {
-        System.out.println("photo method called");
         return photoDiaryService.getAllPhotos(category);
     }
 
-    // 🔹 Upload Photo (Simulated)
+    // 🔹 Upload Photo to a category
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadPhoto(@RequestParam("image") MultipartFile file, @RequestParam("userId") String userId) {
+    public ResponseEntity<String> uploadPhoto(
+            @RequestParam("image") MultipartFile file,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        if (userDetails == null) {
+            throw new RuntimeException("CustomUserDetails is null!");
+        }
+        int userId = userDetails.getUserId();
         return photoDiaryService.uploadPhoto(file, userId);
     }
 
-    // 🔹 Delete Photo
+    // 🔹 Delete a top-level category photo
     @DeleteMapping("/photo/Cloudinary/{photoId}")
     public ResponseEntity<String> deletePhoto(@PathVariable String photoId) {
-        System.out.println(photoId);
         return photoDiaryService.deleteCollection(photoId);
     }
 
+    // 🔹 Upload inner photo to a category
     @PostMapping("/{photoId}/uploadInnerPhoto")
-    public ResponseEntity<String> uploadInnerPhoto(@PathVariable("photoId") String photoId,@RequestParam("image") MultipartFile file) {
-        System.out.println("innerphoto method called");
-        return photoDiaryService.uploadInnerPhoto(Integer.parseInt(photoId),file);
+    public ResponseEntity<String> uploadInnerPhoto(
+            @PathVariable("photoId") String photoId,
+            @RequestParam("image") MultipartFile file
+    ) {
+        return photoDiaryService.uploadInnerPhoto(Integer.parseInt(photoId), file);
     }
 
-    // 🔹 Delete Photo
+    // 🔹 Delete an inner photo
     @DeleteMapping("/InnerPhoto/Cloudinary/{photoId}")
     public ResponseEntity<String> deleteInnerPhoto(@PathVariable String photoId) {
-        System.out.println(photoId);
         return photoDiaryService.deletePhoto(photoId);
     }
 
-    // 🔹 Fetch Individual Photo Details
+    // 🔹 Update category title
     @PutMapping("/photo/{categoryId}/{title}")
-    public ResponseEntity<String> updateCategoryText(@PathVariable Integer categoryId,@PathVariable String title) {
-        System.out.println("updateCategoryText method called");
-        return photoDiaryService.updateCategoryText(categoryId,title);
+    public ResponseEntity<String> updateCategoryText(
+            @PathVariable Integer categoryId,
+            @PathVariable String title
+    ) {
+        return photoDiaryService.updateCategoryText(categoryId, title);
     }
 
-    // 🔹 update Individual Photo lock
+    // 🔹 Lock/unlock category
     @PutMapping("/photo/lock/{categoryId}/{lock}")
-    public ResponseEntity<String> updateCategoryLcok(@PathVariable Integer categoryId,@PathVariable Boolean lock) {
-        System.out.println("updateCategoryLock method called");
-        return photoDiaryService.updateCategoryLcok(categoryId,lock);
+    public ResponseEntity<String> updateCategoryLock(
+            @PathVariable Integer categoryId,
+            @PathVariable Boolean lock
+    ) {
+        return photoDiaryService.updateCategoryLcok(categoryId, lock);
     }
 
-    // 🔹 update Individual Photo lock
-    @PutMapping("/Innerphoto/lock/{PhotoId}/{lock}")
-    public ResponseEntity<String> updatePhotoLcok(@PathVariable Integer PhotoId,@PathVariable Boolean lock) {
-        System.out.println("updateCategoryLock method called");
-        return photoDiaryService.updatePhotoLcok(PhotoId,lock);
+    // 🔹 Lock/unlock inner photo
+    @PutMapping("/Innerphoto/lock/{photoId}/{lock}")
+    public ResponseEntity<String> updatePhotoLock(
+            @PathVariable Integer photoId,
+            @PathVariable Boolean lock
+    ) {
+        return photoDiaryService.updatePhotoLcok(photoId, lock);
     }
 
-    // 🔹 update Individual Photo lock
-    @PutMapping("/user/lock/{userId}/{lock}")
-    public ResponseEntity<String> updateUserLock(@PathVariable Integer userId,@PathVariable Boolean lock) {
-        System.out.println("updateCategoryLock method called");
-        return photoDiaryService.updateUserLock(userId,lock);
+    // 🔹 Lock/unlock user
+    @PutMapping("/user/lock/{lock}")
+    public ResponseEntity<String> updateUserLock(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Boolean lock
+    ) {
+        if (userDetails == null) {
+            throw new RuntimeException("CustomUserDetails is null!");
+        }
+        int userId = userDetails.getUserId();
+        return photoDiaryService.updateUserLock(userId, lock);
     }
 
+    // 🔹 Fetch user by ID
     @GetMapping("/user/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable Integer userId) {
-        System.out.println("GetUser method called");
         return photoDiaryService.getUserById(userId);
     }
 
+    // 🔹 Fetch category text/title by categoryId
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<Map<String, String>> getCategoryrById(@PathVariable Integer categoryId) {
-        System.out.println("Getcategory method called");
+    public ResponseEntity<Map<String, String>> getCategoryById(@PathVariable Integer categoryId) {
         return photoDiaryService.getCategoryrById(categoryId);
     }
 
+    // 🔹 Fetch owner userId of a category
     @GetMapping("/photo/{categoryId}/user")
-    public ResponseEntity<Integer> getCategoryrUser(@PathVariable Integer categoryId) {
-        System.out.println("Getcategory method called");
+    public ResponseEntity<Boolean> getCategoryOwner(@PathVariable Integer categoryId) {
         return photoDiaryService.getCategoryrUser(categoryId);
     }
 }

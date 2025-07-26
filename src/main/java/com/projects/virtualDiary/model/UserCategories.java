@@ -2,10 +2,8 @@ package com.projects.virtualDiary.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -25,7 +23,10 @@ public class UserCategories {
 
     private String imageData;
 
-    private boolean isLocked;
+    @Column(nullable = false)
+    private boolean isLocked = false;
+
+
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)

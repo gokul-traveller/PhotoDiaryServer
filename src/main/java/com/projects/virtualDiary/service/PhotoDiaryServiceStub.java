@@ -1,5 +1,6 @@
 package com.projects.virtualDiary.service;
 
+import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.projects.virtualDiary.model.CategoryPhotos;
 import com.projects.virtualDiary.model.User;
@@ -11,9 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.cloudinary.Cloudinary;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Profile({"dev"})
@@ -50,7 +53,7 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
     }
 
     @Override
-    public List<User> getAllUsers(Long userId) {
+    public List<User> getAllUsers(int userId) {
 
         // Convert image bytes to Base64
         try {
@@ -76,21 +79,26 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
     }
 
     @Override
-    public ResponseEntity<String> uploadPhoto(MultipartFile file, String userId) {
-        try {
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                    ObjectUtils.asMap("folder", "Cloudinary")); // optional folder
-            String img = uploadResult.get("secure_url").toString();
-            String pId = uploadResult.get("public_id").toString();
-            System.out.println("public_id"+pId);
-//            categories.add(new UserCategories(0,new User(1, "user1", "user1@gmial.com", img1, true,categories),pId,"Travel",img,false));
-            return ResponseEntity.ok(img);
-        }
-        catch (Exception e){
-            e.printStackTrace(); // This will show the complete error details
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed");
-        }
+    public ResponseEntity<String> uploadPhoto(MultipartFile file, int userId) {
+        return null;
     }
+
+//    @Override
+//    public ResponseEntity<String> uploadPhoto(MultipartFile file, String userId) {
+//        try {
+//            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+//                    ObjectUtils.asMap("folder", "Cloudinary")); // optional folder
+//            String img = uploadResult.get("secure_url").toString();
+//            String pId = uploadResult.get("public_id").toString();
+//            System.out.println("public_id"+pId);
+////            categories.add(new UserCategories(0,new User(1, "user1", "user1@gmial.com", img1, true,categories),pId,"Travel",img,false));
+//            return ResponseEntity.ok(img);
+//        }
+//        catch (Exception e){
+//            e.printStackTrace(); // This will show the complete error details
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed");
+//        }
+//    }
 
     @Override
     public ResponseEntity<String> deleteCollection(String photoId) {
@@ -194,8 +202,9 @@ public class PhotoDiaryServiceStub implements PhotoDiaryService{
     }
 
     @Override
-    public ResponseEntity<Integer> getCategoryrUser(int categoryId) {
+    public ResponseEntity<Boolean> getCategoryrUser(int categoryId) {
         return null;
     }
+
 
 }

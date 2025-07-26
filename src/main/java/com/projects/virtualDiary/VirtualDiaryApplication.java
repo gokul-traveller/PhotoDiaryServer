@@ -1,8 +1,7 @@
 package com.projects.virtualDiary;
 
-import com.projects.virtualDiary.Data.DBinitialData;
-import com.projects.virtualDiary.service.PhotoDiaryService;
-import com.projects.virtualDiary.service.PhotoDiaryServiceImpl;
+//import com.projects.virtualDiary.Data.DBinitialData;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;

@@ -6,13 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.SecurityFilterChain;
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 @Configuration
 public class SecurityConfig {
     @Autowired
     private OAuth2LoginSuccessHandler successHandler;
+
+    @Autowired
+    private JwtFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -20,18 +22,18 @@ public class SecurityConfig {
                 .cors()
                 .and()
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers("/", "/login", "/error", "/**").permitAll()
+                        .antMatchers("/", "/login", "/error", "/oauth2/**","/api/auth/guestLogin").permitAll()
                         .anyRequest().authenticated()
                 )
-//                .oauth2Login(oauth2 -> oauth2
-//                        .defaultSuccessUrl("/login/success", true)  // true - force redirection to specified url
-//                        .failureUrl("/login/failure"));
                 .oauth2Login(oauth2 -> oauth2
-                                .userInfoEndpoint()
-                                .userService(new CustomOAuth2UserService()) // Custom service for OAuth2 user
-                                .and()
-                                .successHandler(successHandler));
-//                .logout(logout -> logout.logoutSuccessUrl("/"));
+                        .userInfoEndpoint()
+                        .userService(new CustomOAuth2UserService())
+                        .and()
+                        .successHandler(successHandler)
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+
         return http.build();
     }
 
